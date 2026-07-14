@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: healthy-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: healthy_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - healthy-db-data:/var/lib/postgresql/data
+
+volumes:
+  healthy-db-data:

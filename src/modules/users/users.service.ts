@@ -13,7 +13,7 @@ export class UsersService {
   async findByEmail(
     email: string,
   ): Promise<(User & { profile: Profile | null }) | null> {
-    return this.prisma.user.findUnique({
+    return await this.prisma.user.findUnique({
       where: { email, deletedAt: null },
       include: { profile: true },
     });
@@ -36,13 +36,12 @@ export class UsersService {
     email: string,
     passwordHash: string,
     name: string,
-  ): Promise<User & { profile: Profile }> {
+  ): Promise<User & { profile: Profile | null }> {
     const existingUser = await this.findByEmail(email);
     if (existingUser) {
       throw new ConflictException('Este e-mail já está em uso.');
     }
 
-    // Salvamos em uma variável antes de retornar
     const user = await this.prisma.user.create({
       data: {
         email,
@@ -50,7 +49,7 @@ export class UsersService {
         profile: {
           create: {
             name,
-            timezone: 'America/Sao_Paulo', // Padrão MVP
+            timezone: 'America/Sao_Paulo',
           },
         },
       },
@@ -59,7 +58,6 @@ export class UsersService {
       },
     });
 
-    // Afirmamos explicitamente o tipo, pois sabemos que a transação criou o Profile com sucesso
-    return user as User & { profile: Profile };
+    return user;
   }
 }

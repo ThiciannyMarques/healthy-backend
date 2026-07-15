@@ -1,3 +1,4 @@
 {
-    "js/ts.tsdk.path": "node_modules\\typescript\\lib"
+    "js/ts.tsdk.path": "node_modules\\typescript\\lib",
+    "compile-hero.disable-compile-files-on-did-save-code": false
 }

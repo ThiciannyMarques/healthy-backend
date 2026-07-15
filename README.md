@@ -1,98 +1,137 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Healthy Backend MVP
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Plataforma de gestão de bem-estar focada em dados estruturados e gamificação.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Pré-requisitos
 
-## Description
+- Node.js (v20+)
+- Docker ou Podman
+- Git
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Setup do Ambiente
 
-## Project setup
+### 1. Clone o repositório e instale as dependências
 
 ```bash
-$ yarn install
+npm install
 ```
 
-## Compile and run the project
+### 2. Configure o arquivo `.env` baseado no `.env.example`
+
+```env
+DATABASE_URL="postgresql://postgres:postgrespassword@localhost:5432/healthy_db?schema=public"
+JWT_SECRET="sua_chave_secreta"
+JWT_EXPIRES_IN="900"
+```
+
+### 3. Suba o banco de dados (Container)
+
+**Docker**
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+docker-compose up -d
 ```
 
-## Run tests
+**Podman**
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+podman compose up -d
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 4. Aplique as migrações e gere o cliente Prisma
 
 ```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+npx prisma migrate dev
+npx prisma generate
+npx prisma db seed
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+# Comandos Úteis
 
-Check out a few resources that may come in handy when working with NestJS:
+| Comando | Descrição |
+|---------|-----------|
+| `npm run start:dev` | Inicia o servidor em modo watch. |
+| `npx prisma studio` | Abre a interface de visualização do banco de dados. |
+| `npm run lint` | Verifica a qualidade do código. |
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+# Documentação Técnica: Arquitetura e Manutenção
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Este documento detalha o **porquê** das decisões tomadas para facilitar a evolução do produto.
 
-## Stay in touch
+## Visão Arquitetural
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+O sistema segue os princípios de **Clean Architecture** e **Event-Driven Design**.
 
-## License
+A comunicação entre módulos não é direta; ela ocorre através de um **Event Bus** (`EventEmitter`), garantindo que o módulo de **Gamificação** seja completamente independente dos módulos de **Saúde**.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
+
+## Decisões Técnicas Estratégicas
+
+### 1. Driver Adapters (Prisma + `pg`)
+
+Devido às exigências do Prisma 7.8, utilizamos o adaptador nativo do PostgreSQL. Isso garante melhor desempenho e evita conflitos de versão do WASM utilizados pelo Prisma.
+
+### 2. Offline-First Readiness
+
+Todos os registros utilizam **UUID v4** como chave primária.
+
+Isso permite que o frontend (Flutter) crie registros localmente, evitando conflitos de IDs durante sincronizações futuras.
+
+### 3. Soft Deletes
+
+Todas as tabelas possuem a coluna `deletedAt`.
+
+O sistema nunca realiza **Hard Delete**, atendendo aos requisitos de auditoria e conformidade com a **LGPD**.
+
+### 4. Tratamento Centralizado de Exceções
+
+O projeto utiliza um `GlobalExceptionFilter` para padronizar todas as respostas de erro em JSON.
+
+O frontend nunca recebe *stack traces*, apenas mensagens tratadas e consistentes.
+
+---
+
+## Guia de Manutenção
+
+### Como adicionar uma nova funcionalidade
+
+Ao criar um novo módulo (por exemplo, **Sono**), siga sempre este fluxo:
+
+1. Criar os **DTOs** para validação de entrada.
+2. Implementar a lógica de negócio no **Service**, disparando o evento `habit.logged` quando aplicável.
+3. Criar o **Controller**, responsável apenas pelo roteamento e injeção do `CurrentUser`.
+4. Caso a ação gere XP, registrar o listener correspondente no `GamificationService`.
+
+---
+
+## Manutenção do Prisma
+
+Sempre que o schema for alterado:
+
+1. Edite o arquivo `prisma/schema.prisma`.
+2. Execute:
+
+```bash
+npx prisma migrate dev --name <descricao_da_mudanca>
+```
+
+3. O Prisma atualizará automaticamente:
+
+- O banco de dados;
+- O `@prisma/client`;
+- As definições de tipos utilizadas pelo TypeScript.
+
+---
+
+# Docker vs Podman
+
+A diferença prática entre Docker e Podman é mínima neste projeto.
+
+Caso algum desenvolvedor utilize **Docker Desktop** no Windows e encontre problemas de permissão, recomenda-se manter o projeto em um diretório sem caracteres especiais no caminho (por exemplo, `Documents/www/`).
+
+O arquivo `docker-compose.yml` foi criado utilizando a especificação padrão da **OCI (Open Container Initiative)**, sendo compatível com Docker e Podman.

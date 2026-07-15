@@ -8,6 +8,9 @@ import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { SocialLoginDto } from './dto/social-login.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { MailService } from '../mail/mail.service';
 import * as argon2 from 'argon2';
 import { randomUUID } from 'crypto';
 import { User, Profile } from '@prisma/client';
@@ -31,6 +34,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async register(dto: RegisterDto): Promise<AuthResponse> {
@@ -47,7 +51,7 @@ export class AuthService {
       );
     }
 
-    return this.generateAuthResponse(user as User & { profile: Profile });
+    return this.generateAuthResponse(user);
   }
 
   async login(dto: LoginDto): Promise<AuthResponse> {
@@ -100,6 +104,37 @@ export class AuthService {
     }
 
     return this.generateAuthResponse(user as User & { profile: Profile });
+  }
+
+  async forgotPassword(dto: ForgotPasswordDto): Promise<{ message: string }> {
+    const user = await this.usersService.findByEmail(dto.email);
+
+    if (user) {
+      const token = Math.floor(100000 + Math.random() * 900000).toString();
+      const expires = new Date();
+      expires.setHours(expires.getHours() + 1);
+
+      await this.usersService.updateResetToken(user.id, token, expires);
+      await this.mailService.sendResetPasswordEmail(user.email, token);
+    }
+
+    return {
+      message:
+        'Se o e-mail estiver cadastrado, um token de redefinição foi enviado.',
+    };
+  }
+
+  async resetPassword(dto: ResetPasswordDto): Promise<{ message: string }> {
+    const user = await this.usersService.findByResetToken(dto.token);
+
+    if (!user) {
+      throw new UnauthorizedException('Token inválido ou expirado.');
+    }
+
+    const newPasswordHash = await argon2.hash(dto.newPassword);
+    await this.usersService.updatePassword(user.id, newPasswordHash);
+
+    return { message: 'Senha redefinida com sucesso!' };
   }
 
   private generateAuthResponse(

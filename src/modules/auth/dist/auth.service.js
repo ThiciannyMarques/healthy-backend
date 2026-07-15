@@ -47,9 +47,10 @@ var common_1 = require("@nestjs/common");
 var argon2 = require("argon2");
 var crypto_1 = require("crypto");
 var AuthService = /** @class */ (function () {
-    function AuthService(usersService, jwtService) {
+    function AuthService(usersService, jwtService, mailService) {
         this.usersService = usersService;
         this.jwtService = jwtService;
+        this.mailService = mailService;
     }
     AuthService.prototype.register = function (dto) {
         return __awaiter(this, void 0, Promise, function () {
@@ -119,6 +120,54 @@ var AuthService = /** @class */ (function () {
                             throw new common_1.UnauthorizedException('Este utilizador não possui um perfil ativo.');
                         }
                         return [2 /*return*/, this.generateAuthResponse(user)];
+                }
+            });
+        });
+    };
+    AuthService.prototype.forgotPassword = function (dto) {
+        return __awaiter(this, void 0, Promise, function () {
+            var user, token, expires;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.usersService.findByEmail(dto.email)];
+                    case 1:
+                        user = _a.sent();
+                        if (!user) return [3 /*break*/, 4];
+                        token = Math.floor(100000 + Math.random() * 900000).toString();
+                        expires = new Date();
+                        expires.setHours(expires.getHours() + 1);
+                        return [4 /*yield*/, this.usersService.updateResetToken(user.id, token, expires)];
+                    case 2:
+                        _a.sent();
+                        return [4 /*yield*/, this.mailService.sendResetPasswordEmail(user.email, token)];
+                    case 3:
+                        _a.sent();
+                        _a.label = 4;
+                    case 4: return [2 /*return*/, {
+                            message: 'Se o e-mail estiver cadastrado, um token de redefinição foi enviado.'
+                        }];
+                }
+            });
+        });
+    };
+    AuthService.prototype.resetPassword = function (dto) {
+        return __awaiter(this, void 0, Promise, function () {
+            var user, newPasswordHash;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.usersService.findByResetToken(dto.token)];
+                    case 1:
+                        user = _a.sent();
+                        if (!user) {
+                            throw new common_1.UnauthorizedException('Token inválido ou expirado.');
+                        }
+                        return [4 /*yield*/, argon2.hash(dto.newPassword)];
+                    case 2:
+                        newPasswordHash = _a.sent();
+                        return [4 /*yield*/, this.usersService.updatePassword(user.id, newPasswordHash)];
+                    case 3:
+                        _a.sent();
+                        return [2 /*return*/, { message: 'Senha redefinida com sucesso!' }];
                 }
             });
         });

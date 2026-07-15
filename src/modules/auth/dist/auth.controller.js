@@ -73,6 +73,20 @@ var AuthController = /** @class */ (function () {
             });
         });
     };
+    AuthController.prototype.forgotPassword = function (dto) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.authService.forgotPassword(dto)];
+            });
+        });
+    };
+    AuthController.prototype.resetPassword = function (dto) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, this.authService.resetPassword(dto)];
+            });
+        });
+    };
     __decorate([
         public_decorator_1.Public(),
         common_1.Post('register'),
@@ -90,6 +104,18 @@ var AuthController = /** @class */ (function () {
         common_1.HttpCode(common_1.HttpStatus.OK),
         __param(0, common_1.Body())
     ], AuthController.prototype, "socialLogin");
+    __decorate([
+        public_decorator_1.Public(),
+        common_1.Post('forgot-password'),
+        common_1.HttpCode(common_1.HttpStatus.OK),
+        __param(0, common_1.Body())
+    ], AuthController.prototype, "forgotPassword");
+    __decorate([
+        public_decorator_1.Public(),
+        common_1.Post('reset-password'),
+        common_1.HttpCode(common_1.HttpStatus.OK),
+        __param(0, common_1.Body())
+    ], AuthController.prototype, "resetPassword");
     AuthController = __decorate([
         common_1.Controller('auth')
     ], AuthController);

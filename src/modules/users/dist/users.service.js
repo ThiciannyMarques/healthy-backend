@@ -108,7 +108,65 @@ var UsersService = /** @class */ (function () {
                             })];
                     case 2:
                         user = _a.sent();
+                        if (!user.profile) {
+                            throw new common_1.InternalServerErrorException('Falha ao criar o perfil do usuário.');
+                        }
                         return [2 /*return*/, user];
+                }
+            });
+        });
+    };
+    UsersService.prototype.updateResetToken = function (userId, token, expires) {
+        return __awaiter(this, void 0, Promise, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.prisma.user.update({
+                            where: { id: userId },
+                            data: {
+                                resetPasswordToken: token,
+                                resetPasswordExpires: expires
+                            }
+                        })];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    UsersService.prototype.findByResetToken = function (token) {
+        return __awaiter(this, void 0, Promise, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.prisma.user.findFirst({
+                            where: {
+                                resetPasswordToken: token,
+                                resetPasswordExpires: {
+                                    gt: new Date()
+                                },
+                                deletedAt: null
+                            }
+                        })];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
+    UsersService.prototype.updatePassword = function (userId, passwordHash) {
+        return __awaiter(this, void 0, Promise, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.prisma.user.update({
+                            where: { id: userId },
+                            data: {
+                                passwordHash: passwordHash,
+                                resetPasswordToken: null,
+                                resetPasswordExpires: null
+                            }
+                        })];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/];
                 }
             });
         });

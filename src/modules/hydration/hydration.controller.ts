@@ -1,8 +1,8 @@
 import { Controller, Post, Get, Body, Query } from '@nestjs/common';
-import { HydrationService } from '../hydration.service';
-import { LogHydrationDto } from '../dto/log-hydration.dto';
-import { CurrentUser } from '../../../common/decorators/current-user.decorator';
-import { AuthenticatedUser } from '../../auth/strategies/jwt.strategy';
+import { HydrationService } from '../hydration/hydration.service';
+import { LogHydrationDto } from '../hydration/dto/log-hydration.dto';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
 import { HydrationLog } from '@prisma/client';
 
 @Controller('hydration')

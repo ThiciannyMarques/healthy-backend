@@ -6,19 +6,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 exports.__esModule = true;
-exports.HydrationModule = void 0;
-var common_1 = require("@nestjs/common");
-var hydration_service_1 = require("./hydration.service");
-var hydration_controller_1 = require("./hydration.controller");
-var HydrationModule = /** @class */ (function () {
-    function HydrationModule() {
+exports.LogExerciseDto = void 0;
+var class_validator_1 = require("class-validator");
+var LogExerciseDto = /** @class */ (function () {
+    function LogExerciseDto() {
     }
-    HydrationModule = __decorate([
-        common_1.Module({
-            controllers: [hydration_controller_1.HydrationController],
-            providers: [hydration_service_1.HydrationService]
-        })
-    ], HydrationModule);
-    return HydrationModule;
+    __decorate([
+        class_validator_1.IsBoolean({ message: 'O valor deve ser verdadeiro ou falso.' })
+    ], LogExerciseDto.prototype, "didExercise");
+    __decorate([
+        class_validator_1.IsISO8601({ strict: true }, { message: 'A data deve estar no formato ISO-8601 válido.' })
+    ], LogExerciseDto.prototype, "loggedAt");
+    return LogExerciseDto;
 }());
-exports.HydrationModule = HydrationModule;
+exports.LogExerciseDto = LogExerciseDto;

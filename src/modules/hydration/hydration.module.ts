@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { HydrationService } from './hydration.service';
-import { HydrationController } from '../hydration/dto/hydration.controller';
+import { HydrationController } from './hydration.controller';
 
 @Module({
   controllers: [HydrationController],

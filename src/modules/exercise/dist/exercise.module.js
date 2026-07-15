@@ -6,19 +6,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 exports.__esModule = true;
-exports.HydrationModule = void 0;
+exports.ExerciseModule = void 0;
 var common_1 = require("@nestjs/common");
-var hydration_service_1 = require("./hydration.service");
-var hydration_controller_1 = require("./hydration.controller");
-var HydrationModule = /** @class */ (function () {
-    function HydrationModule() {
+var exercise_service_1 = require("./exercise.service");
+var exercise_controller_1 = require("./exercise.controller");
+var ExerciseModule = /** @class */ (function () {
+    function ExerciseModule() {
     }
-    HydrationModule = __decorate([
+    ExerciseModule = __decorate([
         common_1.Module({
-            controllers: [hydration_controller_1.HydrationController],
-            providers: [hydration_service_1.HydrationService]
+            controllers: [exercise_controller_1.ExerciseController],
+            providers: [exercise_service_1.ExerciseService]
         })
-    ], HydrationModule);
-    return HydrationModule;
+    ], ExerciseModule);
+    return ExerciseModule;
 }());
-exports.HydrationModule = HydrationModule;
+exports.ExerciseModule = ExerciseModule;

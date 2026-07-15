@@ -10,6 +10,7 @@ import { WeightModule } from './modules/weight/weight.module';
 import { ExerciseModule } from './modules/exercise/exercise.module';
 import { GamificationModule } from './modules/gamification/gamification.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ProfileModule } from './modules/profile/profile.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
 @Module({
@@ -24,6 +25,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
     ExerciseModule,
     GamificationModule,
     DashboardModule,
+    ProfileModule,
   ],
   controllers: [],
   providers: [

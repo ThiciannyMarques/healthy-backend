@@ -10,13 +10,14 @@ exports.GamificationModule = void 0;
 var common_1 = require("@nestjs/common");
 var gamification_service_1 = require("./gamification.service");
 var gamification_controller_1 = require("./gamification.controller");
+var streak_service_1 = require("./streak.service");
 var GamificationModule = /** @class */ (function () {
     function GamificationModule() {
     }
     GamificationModule = __decorate([
         common_1.Module({
             controllers: [gamification_controller_1.GamificationController],
-            providers: [gamification_service_1.GamificationService]
+            providers: [gamification_service_1.GamificationService, streak_service_1.StreakService]
         })
     ], GamificationModule);
     return GamificationModule;

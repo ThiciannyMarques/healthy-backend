@@ -1,12 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { PrismaService } from '../../database/prisma.service';
+import { StreakService } from './streak.service';
 
 @Injectable()
 export class GamificationService {
   private readonly logger = new Logger(GamificationService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly streakService: StreakService,
+  ) {}
 
   @OnEvent('habit.logged')
   async handleHabitLoggedEvent(payload: { profileId: string; action: string }) {
@@ -21,6 +25,8 @@ export class GamificationService {
           },
         },
       });
+
+      await this.streakService.updateStreak(payload.profileId);
 
       this.logger.log(
         `+${XP_REWARD} XP concedido ao perfil ${payload.profileId} (Ação: ${payload.action})`,

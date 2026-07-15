@@ -42,57 +42,57 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.GamificationService = void 0;
+exports.StreakService = void 0;
 var common_1 = require("@nestjs/common");
-var event_emitter_1 = require("@nestjs/event-emitter");
-var GamificationService = /** @class */ (function () {
-    function GamificationService(prisma, streakService) {
+var StreakService = /** @class */ (function () {
+    function StreakService(prisma) {
         this.prisma = prisma;
-        this.streakService = streakService;
-        this.logger = new common_1.Logger(GamificationService_1.name);
     }
-    GamificationService_1 = GamificationService;
-    GamificationService.prototype.handleHabitLoggedEvent = function (payload) {
-        return __awaiter(this, void 0, void 0, function () {
-            var XP_REWARD, error_1;
+    StreakService.prototype.updateStreak = function (profileId) {
+        return __awaiter(this, void 0, Promise, function () {
+            var today, yesterday, profile, lastUpdate;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        XP_REWARD = 10;
-                        _a.label = 1;
+                        today = new Date();
+                        today.setUTCHours(0, 0, 0, 0);
+                        yesterday = new Date(today);
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        return [4 /*yield*/, this.prisma.profile.findUnique({
+                                where: { id: profileId },
+                                select: { streakDays: true, updatedAt: true }
+                            })];
                     case 1:
-                        _a.trys.push([1, 4, , 5]);
+                        profile = _a.sent();
+                        if (!profile)
+                            return [2 /*return*/];
+                        lastUpdate = new Date(profile.updatedAt);
+                        lastUpdate.setUTCHours(0, 0, 0, 0);
+                        if (!(lastUpdate.getTime() === yesterday.getTime())) return [3 /*break*/, 3];
                         return [4 /*yield*/, this.prisma.profile.update({
-                                where: { id: payload.profileId },
-                                data: {
-                                    currentXp: {
-                                        increment: XP_REWARD
-                                    }
-                                }
+                                where: { id: profileId },
+                                data: { streakDays: { increment: 1 } }
                             })];
                     case 2:
                         _a.sent();
-                        return [4 /*yield*/, this.streakService.updateStreak(payload.profileId)];
+                        return [3 /*break*/, 5];
                     case 3:
-                        _a.sent();
-                        this.logger.log("+" + XP_REWARD + " XP concedido ao perfil " + payload.profileId + " (A\u00E7\u00E3o: " + payload.action + ")");
-                        return [3 /*break*/, 5];
+                        if (!(lastUpdate.getTime() < yesterday.getTime())) return [3 /*break*/, 5];
+                        return [4 /*yield*/, this.prisma.profile.update({
+                                where: { id: profileId },
+                                data: { streakDays: 1 }
+                            })];
                     case 4:
-                        error_1 = _a.sent();
-                        this.logger.error("Falha ao conceder XP para o perfil " + payload.profileId, error_1);
-                        return [3 /*break*/, 5];
+                        _a.sent();
+                        _a.label = 5;
                     case 5: return [2 /*return*/];
                 }
             });
         });
     };
-    var GamificationService_1;
-    __decorate([
-        event_emitter_1.OnEvent('habit.logged')
-    ], GamificationService.prototype, "handleHabitLoggedEvent");
-    GamificationService = GamificationService_1 = __decorate([
+    StreakService = __decorate([
         common_1.Injectable()
-    ], GamificationService);
-    return GamificationService;
+    ], StreakService);
+    return StreakService;
 }());
-exports.GamificationService = GamificationService;
+exports.StreakService = StreakService;

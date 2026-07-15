@@ -4,10 +4,19 @@ import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { MedicationsModule } from './modules/medications/medications.module';
+import { HydrationModule } from './modules/hydration/hydration.module';
+import { WeightModule } from './modules/weight/weight.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, AuthModule, MedicationsModule],
+  imports: [
+    DatabaseModule,
+    UsersModule,
+    AuthModule,
+    MedicationsModule,
+    HydrationModule,
+    WeightModule,
+  ],
   controllers: [],
   providers: [
     {

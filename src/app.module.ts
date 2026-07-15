@@ -8,6 +8,7 @@ import { MedicationsModule } from './modules/medications/medications.module';
 import { HydrationModule } from './modules/hydration/hydration.module';
 import { WeightModule } from './modules/weight/weight.module';
 import { ExerciseModule } from './modules/exercise/exercise.module';
+import { GamificationModule } from './modules/gamification/gamification.module';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
 @Module({
@@ -20,6 +21,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
     HydrationModule,
     WeightModule,
     ExerciseModule,
+    GamificationModule,
   ],
   controllers: [],
   providers: [

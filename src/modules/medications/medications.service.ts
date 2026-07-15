@@ -7,10 +7,14 @@ import { PrismaService } from '../../database/prisma.service';
 import { CreateMedicationDto } from './dto/create-medication.dto';
 import { LogMedicationDto } from './dto/log-medication.dto';
 import { Medication, MedicationLog } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class MedicationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   async create(
     profileId: string,
@@ -69,8 +73,8 @@ export class MedicationsService {
       throw new NotFoundException('Medicamento ativo não encontrado.');
     }
 
-    return await this.prisma.$transaction(async (tx) => {
-      const log = await tx.medicationLog.create({
+    const log = await this.prisma.$transaction(async (tx) => {
+      const createdLog = await tx.medicationLog.create({
         data: {
           medicationId,
           profileId,
@@ -90,7 +94,16 @@ export class MedicationsService {
         );
       }
 
-      return log;
+      return createdLog;
     });
+
+    if (dto.status === 'TAKEN') {
+      this.eventEmitter.emit('habit.logged', {
+        profileId,
+        action: 'medication_taken',
+      });
+    }
+
+    return log;
   }
 }

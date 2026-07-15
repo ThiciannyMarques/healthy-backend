@@ -42,66 +42,53 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.ExerciseService = void 0;
+exports.GamificationService = void 0;
 var common_1 = require("@nestjs/common");
-var ExerciseService = /** @class */ (function () {
-    function ExerciseService(prisma, eventEmitter) {
+var event_emitter_1 = require("@nestjs/event-emitter");
+var GamificationService = /** @class */ (function () {
+    function GamificationService(prisma) {
         this.prisma = prisma;
-        this.eventEmitter = eventEmitter;
+        this.logger = new common_1.Logger(GamificationService_1.name);
     }
-    ExerciseService.prototype.logExercise = function (profileId, dto) {
-        return __awaiter(this, void 0, Promise, function () {
-            var log;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.prisma.exerciseLog.create({
-                            data: {
-                                profileId: profileId,
-                                didExercise: dto.didExercise,
-                                loggedAt: new Date(dto.loggedAt)
-                            }
-                        })];
-                    case 1:
-                        log = _a.sent();
-                        if (dto.didExercise) {
-                            this.eventEmitter.emit('habit.logged', {
-                                profileId: profileId,
-                                action: 'exercise_completed'
-                            });
-                        }
-                        return [2 /*return*/, log];
-                }
-            });
-        });
-    };
-    ExerciseService.prototype.getDailyStatus = function (profileId, targetDate) {
-        return __awaiter(this, void 0, Promise, function () {
-            var startOfDay, endOfDay;
+    GamificationService_1 = GamificationService;
+    GamificationService.prototype.handleHabitLoggedEvent = function (payload) {
+        return __awaiter(this, void 0, void 0, function () {
+            var XP_REWARD, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        startOfDay = new Date(targetDate);
-                        startOfDay.setUTCHours(0, 0, 0, 0);
-                        endOfDay = new Date(targetDate);
-                        endOfDay.setUTCHours(23, 59, 59, 999);
-                        return [4 /*yield*/, this.prisma.exerciseLog.findFirst({
-                                where: {
-                                    profileId: profileId,
-                                    loggedAt: {
-                                        gte: startOfDay,
-                                        lte: endOfDay
+                        XP_REWARD = 10;
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, this.prisma.profile.update({
+                                where: { id: payload.profileId },
+                                data: {
+                                    currentXp: {
+                                        increment: XP_REWARD
                                     }
-                                },
-                                orderBy: { loggedAt: 'desc' }
+                                }
                             })];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 2:
+                        _a.sent();
+                        this.logger.log("+" + XP_REWARD + " XP concedido ao perfil " + payload.profileId + " (A\u00E7\u00E3o: " + payload.action + ")");
+                        return [3 /*break*/, 4];
+                    case 3:
+                        error_1 = _a.sent();
+                        this.logger.error("Falha ao conceder XP para o perfil " + payload.profileId, error_1);
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
                 }
             });
         });
     };
-    ExerciseService = __decorate([
+    var GamificationService_1;
+    __decorate([
+        event_emitter_1.OnEvent('habit.logged')
+    ], GamificationService.prototype, "handleHabitLoggedEvent");
+    GamificationService = GamificationService_1 = __decorate([
         common_1.Injectable()
-    ], ExerciseService);
-    return ExerciseService;
+    ], GamificationService);
+    return GamificationService;
 }());
-exports.ExerciseService = ExerciseService;
+exports.GamificationService = GamificationService;

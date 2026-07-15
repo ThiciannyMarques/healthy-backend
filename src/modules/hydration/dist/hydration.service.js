@@ -45,11 +45,13 @@ exports.__esModule = true;
 exports.HydrationService = void 0;
 var common_1 = require("@nestjs/common");
 var HydrationService = /** @class */ (function () {
-    function HydrationService(prisma) {
+    function HydrationService(prisma, eventEmitter) {
         this.prisma = prisma;
+        this.eventEmitter = eventEmitter;
     }
     HydrationService.prototype.logConsumption = function (profileId, dto) {
         return __awaiter(this, void 0, Promise, function () {
+            var log;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.prisma.hydrationLog.create({
@@ -59,7 +61,13 @@ var HydrationService = /** @class */ (function () {
                                 loggedAt: new Date(dto.loggedAt)
                             }
                         })];
-                    case 1: return [2 /*return*/, _a.sent()];
+                    case 1:
+                        log = _a.sent();
+                        this.eventEmitter.emit('habit.logged', {
+                            profileId: profileId,
+                            action: 'hydration_logged'
+                        });
+                        return [2 /*return*/, log];
                 }
             });
         });

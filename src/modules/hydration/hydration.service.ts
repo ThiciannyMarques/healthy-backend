@@ -2,22 +2,33 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { LogHydrationDto } from './dto/log-hydration.dto';
 import { HydrationLog } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class HydrationService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   async logConsumption(
     profileId: string,
     dto: LogHydrationDto,
   ): Promise<HydrationLog> {
-    return await this.prisma.hydrationLog.create({
+    const log = await this.prisma.hydrationLog.create({
       data: {
         profileId,
         amountMl: dto.amountMl,
         loggedAt: new Date(dto.loggedAt),
       },
     });
+
+    this.eventEmitter.emit('habit.logged', {
+      profileId,
+      action: 'hydration_logged',
+    });
+
+    return log;
   }
 
   async getDailySummary(

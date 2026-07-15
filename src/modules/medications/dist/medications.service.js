@@ -45,8 +45,9 @@ exports.__esModule = true;
 exports.MedicationsService = void 0;
 var common_1 = require("@nestjs/common");
 var MedicationsService = /** @class */ (function () {
-    function MedicationsService(prisma) {
+    function MedicationsService(prisma, eventEmitter) {
         this.prisma = prisma;
+        this.eventEmitter = eventEmitter;
     }
     MedicationsService.prototype.create = function (profileId, dto) {
         return __awaiter(this, void 0, Promise, function () {
@@ -107,7 +108,7 @@ var MedicationsService = /** @class */ (function () {
     };
     MedicationsService.prototype.logConsumption = function (profileId, medicationId, dto) {
         return __awaiter(this, void 0, Promise, function () {
-            var medication;
+            var medication, log;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -120,7 +121,7 @@ var MedicationsService = /** @class */ (function () {
                             throw new common_1.NotFoundException('Medicamento ativo não encontrado.');
                         }
                         return [4 /*yield*/, this.prisma.$transaction(function (tx) { return __awaiter(_this, void 0, void 0, function () {
-                                var log;
+                                var createdLog;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0: return [4 /*yield*/, tx.medicationLog.create({
@@ -132,7 +133,7 @@ var MedicationsService = /** @class */ (function () {
                                                 }
                                             })];
                                         case 1:
-                                            log = _a.sent();
+                                            createdLog = _a.sent();
                                             if (!(dto.status === 'TAKEN' && medication.stockCount > 0)) return [3 /*break*/, 3];
                                             return [4 /*yield*/, tx.medication.update({
                                                     where: { id: medicationId },
@@ -146,11 +147,19 @@ var MedicationsService = /** @class */ (function () {
                                                 throw new common_1.BadRequestException('Stock insuficiente para registar a toma.');
                                             }
                                             _a.label = 4;
-                                        case 4: return [2 /*return*/, log];
+                                        case 4: return [2 /*return*/, createdLog];
                                     }
                                 });
                             }); })];
-                    case 2: return [2 /*return*/, _a.sent()];
+                    case 2:
+                        log = _a.sent();
+                        if (dto.status === 'TAKEN') {
+                            this.eventEmitter.emit('habit.logged', {
+                                profileId: profileId,
+                                action: 'medication_taken'
+                            });
+                        }
+                        return [2 /*return*/, log];
                 }
             });
         });

@@ -45,6 +45,7 @@ exports.__esModule = true;
 exports.AuthService = void 0;
 var common_1 = require("@nestjs/common");
 var argon2 = require("argon2");
+var crypto_1 = require("crypto");
 var AuthService = /** @class */ (function () {
     function AuthService(usersService, jwtService) {
         this.usersService = usersService;
@@ -52,7 +53,7 @@ var AuthService = /** @class */ (function () {
     }
     AuthService.prototype.register = function (dto) {
         return __awaiter(this, void 0, Promise, function () {
-            var passwordHash, user, payload, accessToken;
+            var passwordHash, user;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, argon2.hash(dto.password)];
@@ -61,36 +62,17 @@ var AuthService = /** @class */ (function () {
                         return [4 /*yield*/, this.usersService.create(dto.email, passwordHash, dto.name)];
                     case 2:
                         user = _a.sent();
-                        // 👇 Esta verificação resolve o erro TS18047 garantindo ao TypeScript que o perfil existe
                         if (!user.profile) {
                             throw new common_1.InternalServerErrorException('Erro interno ao gerar o perfil do usuário.');
                         }
-                        payload = {
-                            sub: user.id,
-                            email: user.email,
-                            profileId: user.profile.id
-                        };
-                        accessToken = this.jwtService.sign(payload);
-                        return [2 /*return*/, {
-                                accessToken: accessToken,
-                                user: {
-                                    id: user.id,
-                                    email: user.email,
-                                    profile: {
-                                        id: user.profile.id,
-                                        name: user.profile.name,
-                                        streakDays: user.profile.streakDays,
-                                        currentXp: user.profile.currentXp
-                                    }
-                                }
-                            }];
+                        return [2 /*return*/, this.generateAuthResponse(user)];
                 }
             });
         });
     };
     AuthService.prototype.login = function (dto) {
         return __awaiter(this, void 0, Promise, function () {
-            var user, isPasswordValid, payload, accessToken;
+            var user, isPasswordValid;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.usersService.findByEmail(dto.email)];
@@ -108,28 +90,59 @@ var AuthService = /** @class */ (function () {
                         if (!user.profile) {
                             throw new common_1.UnauthorizedException('Este utilizador não possui um perfil ativo.');
                         }
-                        payload = {
-                            sub: user.id,
-                            email: user.email,
-                            profileId: user.profile.id
-                        };
-                        accessToken = this.jwtService.sign(payload);
-                        return [2 /*return*/, {
-                                accessToken: accessToken,
-                                user: {
-                                    id: user.id,
-                                    email: user.email,
-                                    profile: {
-                                        id: user.profile.id,
-                                        name: user.profile.name,
-                                        streakDays: user.profile.streakDays,
-                                        currentXp: user.profile.currentXp
-                                    }
-                                }
-                            }];
+                        return [2 /*return*/, this.generateAuthResponse(user)];
                 }
             });
         });
+    };
+    AuthService.prototype.socialLogin = function (dto) {
+        return __awaiter(this, void 0, Promise, function () {
+            var user, randomPassword, passwordHash, defaultName;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.usersService.findByEmail(dto.email)];
+                    case 1:
+                        user = _a.sent();
+                        if (!!user) return [3 /*break*/, 4];
+                        randomPassword = crypto_1.randomUUID() + crypto_1.randomUUID();
+                        return [4 /*yield*/, argon2.hash(randomPassword)];
+                    case 2:
+                        passwordHash = _a.sent();
+                        defaultName = dto.name ||
+                            (dto.provider === 'apple' ? 'Usuário Apple' : 'Usuário Convidado');
+                        return [4 /*yield*/, this.usersService.create(dto.email, passwordHash, defaultName)];
+                    case 3:
+                        user = _a.sent();
+                        _a.label = 4;
+                    case 4:
+                        if (!user.profile) {
+                            throw new common_1.UnauthorizedException('Este utilizador não possui um perfil ativo.');
+                        }
+                        return [2 /*return*/, this.generateAuthResponse(user)];
+                }
+            });
+        });
+    };
+    AuthService.prototype.generateAuthResponse = function (user) {
+        var payload = {
+            sub: user.id,
+            email: user.email,
+            profileId: user.profile.id
+        };
+        var accessToken = this.jwtService.sign(payload);
+        return {
+            accessToken: accessToken,
+            user: {
+                id: user.id,
+                email: user.email,
+                profile: {
+                    id: user.profile.id,
+                    name: user.profile.name,
+                    streakDays: user.profile.streakDays,
+                    currentXp: user.profile.currentXp
+                }
+            }
+        };
     };
     AuthService = __decorate([
         common_1.Injectable()

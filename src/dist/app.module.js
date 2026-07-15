@@ -18,6 +18,7 @@ var hydration_module_1 = require("./modules/hydration/hydration.module");
 var weight_module_1 = require("./modules/weight/weight.module");
 var exercise_module_1 = require("./modules/exercise/exercise.module");
 var gamification_module_1 = require("./modules/gamification/gamification.module");
+var dashboard_module_1 = require("./modules/dashboard/dashboard.module");
 var jwt_auth_guard_1 = require("./modules/auth/guards/jwt-auth.guard");
 var AppModule = /** @class */ (function () {
     function AppModule() {
@@ -34,6 +35,7 @@ var AppModule = /** @class */ (function () {
                 weight_module_1.WeightModule,
                 exercise_module_1.ExerciseModule,
                 gamification_module_1.GamificationModule,
+                dashboard_module_1.DashboardModule,
             ],
             controllers: [],
             providers: [

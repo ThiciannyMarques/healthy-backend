@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsInt, Min, Matches } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsInt,
+  Min,
+  Matches,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateMedicationDto {
   @IsString()
@@ -18,4 +25,16 @@ export class CreateMedicationDto {
     message: 'O horário deve estar no formato HH:MM (ex: 08:00, 22:30).',
   })
   timeOfDay: string;
+
+  @IsString()
+  @IsOptional()
+  color?: string;
+
+  @IsString()
+  @IsOptional()
+  icon?: string;
+
+  @IsString()
+  @IsOptional()
+  frequency?: string;
 }

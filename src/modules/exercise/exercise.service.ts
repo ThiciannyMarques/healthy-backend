@@ -19,6 +19,7 @@ export class ExerciseService {
       data: {
         profileId,
         didExercise: dto.didExercise,
+        durationMinutes: dto.durationMinutes,
         loggedAt: new Date(dto.loggedAt),
       },
     });
@@ -46,10 +47,7 @@ export class ExerciseService {
     return await this.prisma.exerciseLog.findFirst({
       where: {
         profileId,
-        loggedAt: {
-          gte: startOfDay,
-          lte: endOfDay,
-        },
+        loggedAt: { gte: startOfDay, lte: endOfDay },
       },
       orderBy: { loggedAt: 'desc' },
     });

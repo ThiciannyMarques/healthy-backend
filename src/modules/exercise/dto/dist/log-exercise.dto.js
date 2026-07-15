@@ -15,6 +15,11 @@ var LogExerciseDto = /** @class */ (function () {
         class_validator_1.IsBoolean({ message: 'O valor deve ser verdadeiro ou falso.' })
     ], LogExerciseDto.prototype, "didExercise");
     __decorate([
+        class_validator_1.IsInt(),
+        class_validator_1.Min(1),
+        class_validator_1.IsOptional()
+    ], LogExerciseDto.prototype, "durationMinutes");
+    __decorate([
         class_validator_1.IsISO8601({ strict: true }, { message: 'A data deve estar no formato ISO-8601 válido.' })
     ], LogExerciseDto.prototype, "loggedAt");
     return LogExerciseDto;

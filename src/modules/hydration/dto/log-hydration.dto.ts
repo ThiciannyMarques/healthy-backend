@@ -1,9 +1,13 @@
-import { IsInt, IsISO8601, Min } from 'class-validator';
+import { IsInt, IsISO8601, Min, IsString, IsOptional } from 'class-validator';
 
 export class LogHydrationDto {
   @IsInt({ message: 'A quantidade deve ser um número inteiro.' })
   @Min(1, { message: 'A quantidade deve ser maior que 0.' })
   amountMl: number;
+
+  @IsString()
+  @IsOptional()
+  containerType?: string;
 
   @IsISO8601(
     { strict: true },

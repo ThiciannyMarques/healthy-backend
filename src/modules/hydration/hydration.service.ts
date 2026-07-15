@@ -19,6 +19,7 @@ export class HydrationService {
       data: {
         profileId,
         amountMl: dto.amountMl,
+        containerType: dto.containerType || 'glass',
         loggedAt: new Date(dto.loggedAt),
       },
     });
@@ -42,15 +43,10 @@ export class HydrationService {
     endOfDay.setUTCHours(23, 59, 59, 999);
 
     const logs = await this.prisma.hydrationLog.aggregate({
-      _sum: {
-        amountMl: true,
-      },
+      _sum: { amountMl: true },
       where: {
         profileId,
-        loggedAt: {
-          gte: startOfDay,
-          lte: endOfDay,
-        },
+        loggedAt: { gte: startOfDay, lte: endOfDay },
       },
     });
 

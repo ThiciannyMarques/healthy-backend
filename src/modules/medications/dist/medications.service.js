@@ -59,7 +59,10 @@ var MedicationsService = /** @class */ (function () {
                                 name: dto.name,
                                 dosage: dto.dosage,
                                 stockCount: dto.stockCount,
-                                timeOfDay: dto.timeOfDay
+                                timeOfDay: dto.timeOfDay,
+                                color: dto.color || '#E24A5C',
+                                icon: dto.icon || 'pill',
+                                frequency: dto.frequency || 'DAILY'
                             }
                         })];
                     case 1: return [2 /*return*/, _a.sent()];

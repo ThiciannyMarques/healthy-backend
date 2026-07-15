@@ -16,6 +16,10 @@ var LogHydrationDto = /** @class */ (function () {
         class_validator_1.Min(1, { message: 'A quantidade deve ser maior que 0.' })
     ], LogHydrationDto.prototype, "amountMl");
     __decorate([
+        class_validator_1.IsString(),
+        class_validator_1.IsOptional()
+    ], LogHydrationDto.prototype, "containerType");
+    __decorate([
         class_validator_1.IsISO8601({ strict: true }, { message: 'A data deve estar no formato ISO-8601 válido.' })
     ], LogHydrationDto.prototype, "loggedAt");
     return LogHydrationDto;

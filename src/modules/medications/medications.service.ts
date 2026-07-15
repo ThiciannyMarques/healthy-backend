@@ -27,6 +27,9 @@ export class MedicationsService {
         dosage: dto.dosage,
         stockCount: dto.stockCount,
         timeOfDay: dto.timeOfDay,
+        color: dto.color || '#E24A5C',
+        icon: dto.icon || 'pill',
+        frequency: dto.frequency || 'DAILY',
       },
     });
   }

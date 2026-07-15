@@ -1,8 +1,13 @@
-import { IsBoolean, IsISO8601 } from 'class-validator';
+import { IsBoolean, IsISO8601, IsInt, Min, IsOptional } from 'class-validator';
 
 export class LogExerciseDto {
   @IsBoolean({ message: 'O valor deve ser verdadeiro ou falso.' })
   didExercise: boolean;
+
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  durationMinutes?: number;
 
   @IsISO8601(
     { strict: true },

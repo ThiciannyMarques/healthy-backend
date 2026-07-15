@@ -58,6 +58,7 @@ var HydrationService = /** @class */ (function () {
                             data: {
                                 profileId: profileId,
                                 amountMl: dto.amountMl,
+                                containerType: dto.containerType || 'glass',
                                 loggedAt: new Date(dto.loggedAt)
                             }
                         })];
@@ -83,15 +84,10 @@ var HydrationService = /** @class */ (function () {
                         endOfDay = new Date(targetDate);
                         endOfDay.setUTCHours(23, 59, 59, 999);
                         return [4 /*yield*/, this.prisma.hydrationLog.aggregate({
-                                _sum: {
-                                    amountMl: true
-                                },
+                                _sum: { amountMl: true },
                                 where: {
                                     profileId: profileId,
-                                    loggedAt: {
-                                        gte: startOfDay,
-                                        lte: endOfDay
-                                    }
+                                    loggedAt: { gte: startOfDay, lte: endOfDay }
                                 }
                             })];
                     case 1:

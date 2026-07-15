@@ -58,6 +58,7 @@ var ExerciseService = /** @class */ (function () {
                             data: {
                                 profileId: profileId,
                                 didExercise: dto.didExercise,
+                                durationMinutes: dto.durationMinutes,
                                 loggedAt: new Date(dto.loggedAt)
                             }
                         })];
@@ -87,10 +88,7 @@ var ExerciseService = /** @class */ (function () {
                         return [4 /*yield*/, this.prisma.exerciseLog.findFirst({
                                 where: {
                                     profileId: profileId,
-                                    loggedAt: {
-                                        gte: startOfDay,
-                                        lte: endOfDay
-                                    }
+                                    loggedAt: { gte: startOfDay, lte: endOfDay }
                                 },
                                 orderBy: { loggedAt: 'desc' }
                             })];

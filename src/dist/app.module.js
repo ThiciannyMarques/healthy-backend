@@ -9,12 +9,14 @@ exports.__esModule = true;
 exports.AppModule = void 0;
 var common_1 = require("@nestjs/common");
 var core_1 = require("@nestjs/core");
+var event_emitter_1 = require("@nestjs/event-emitter");
 var database_module_1 = require("./database/database.module");
 var users_module_1 = require("./modules/users/users.module");
 var auth_module_1 = require("./modules/auth/auth.module");
 var medications_module_1 = require("./modules/medications/medications.module");
 var hydration_module_1 = require("./modules/hydration/hydration.module");
 var weight_module_1 = require("./modules/weight/weight.module");
+var exercise_module_1 = require("./modules/exercise/exercise.module");
 var jwt_auth_guard_1 = require("./modules/auth/guards/jwt-auth.guard");
 var AppModule = /** @class */ (function () {
     function AppModule() {
@@ -22,12 +24,14 @@ var AppModule = /** @class */ (function () {
     AppModule = __decorate([
         common_1.Module({
             imports: [
+                event_emitter_1.EventEmitterModule.forRoot(),
                 database_module_1.DatabaseModule,
                 users_module_1.UsersModule,
                 auth_module_1.AuthModule,
                 medications_module_1.MedicationsModule,
                 hydration_module_1.HydrationModule,
                 weight_module_1.WeightModule,
+                exercise_module_1.ExerciseModule,
             ],
             controllers: [],
             providers: [

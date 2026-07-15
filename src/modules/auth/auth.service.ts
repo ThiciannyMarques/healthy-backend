@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
@@ -33,6 +37,13 @@ export class AuthService {
       passwordHash,
       dto.name,
     );
+
+    // 👇 Esta verificação resolve o erro TS18047 garantindo ao TypeScript que o perfil existe
+    if (!user.profile) {
+      throw new InternalServerErrorException(
+        'Erro interno ao gerar o perfil do usuário.',
+      );
+    }
 
     const payload = {
       sub: user.id,

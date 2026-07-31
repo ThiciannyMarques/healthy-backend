@@ -43,14 +43,16 @@ var common_1 = require("@nestjs/common");
 var helmet_1 = require("helmet");
 var http_exception_filter_1 = require("./common/filters/http-exception.filter");
 var transform_interceptor_1 = require("./common/interceptors/transform.interceptor");
+var app_config_service_1 = require("./config/app-config.service");
 function bootstrap() {
     return __awaiter(this, void 0, Promise, function () {
-        var app;
+        var app, configService, port;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, core_1.NestFactory.create(app_module_1.AppModule)];
                 case 1:
                     app = _a.sent();
+                    configService = app.get(app_config_service_1.AppConfigService, { strict: false });
                     app.use(helmet_1["default"]());
                     app.enableCors({
                         origin: '*',
@@ -65,10 +67,11 @@ function bootstrap() {
                     }));
                     app.useGlobalInterceptors(new transform_interceptor_1.TransformInterceptor());
                     app.useGlobalFilters(new http_exception_filter_1.GlobalExceptionFilter());
-                    return [4 /*yield*/, app.listen(3000)];
+                    port = configService.port || 3000;
+                    return [4 /*yield*/, app.listen(port, '0.0.0.0')];
                 case 2:
                     _a.sent();
-                    console.log("Healthy MVP Backend is running on: http://localhost:3000/api/v1");
+                    console.log("Healthy MVP Backend is running on: http://localhost:" + port + "/api/v1");
                     return [2 /*return*/];
             }
         });

@@ -48,6 +48,7 @@ exports.__esModule = true;
 exports.ProfileController = void 0;
 var common_1 = require("@nestjs/common");
 var current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
+var jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 var ProfileController = /** @class */ (function () {
     function ProfileController(profileService) {
         this.profileService = profileService;
@@ -56,7 +57,11 @@ var ProfileController = /** @class */ (function () {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.profileService.getProfile(user.profileId)];
+                    case 0:
+                        if (!user || !user.profileId) {
+                            throw new common_1.UnauthorizedException('Sessão inválida ou usuário não encontrado.');
+                        }
+                        return [4 /*yield*/, this.profileService.getProfile(user.profileId)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
@@ -66,7 +71,11 @@ var ProfileController = /** @class */ (function () {
         return __awaiter(this, void 0, Promise, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.profileService.updateProfile(user.profileId, dto)];
+                    case 0:
+                        if (!user || !user.profileId) {
+                            throw new common_1.UnauthorizedException('Sessão inválida ou usuário não encontrado.');
+                        }
+                        return [4 /*yield*/, this.profileService.updateProfile(user.profileId, dto)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
@@ -82,7 +91,8 @@ var ProfileController = /** @class */ (function () {
         __param(1, common_1.Body())
     ], ProfileController.prototype, "updateMyProfile");
     ProfileController = __decorate([
-        common_1.Controller('profile')
+        common_1.Controller('profile'),
+        common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard)
     ], ProfileController);
     return ProfileController;
 }());

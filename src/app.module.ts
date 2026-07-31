@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
-import { EventEmitterModule } from '@nestjs/event-emitter';
+import { EventEmitterModule } from '@nestjs/event-emitter'; // <-- Importação adicionada
+import { AppConfigModule } from './config/app-config.module';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -12,12 +12,12 @@ import { GamificationModule } from './modules/gamification/gamification.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { MailModule } from './modules/mail/mail.module';
-import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
-    EventEmitterModule.forRoot(),
+    AppConfigModule,
     DatabaseModule,
+    EventEmitterModule.forRoot(), // <-- Módulo global de eventos inicializado aqui
     UsersModule,
     AuthModule,
     MedicationsModule,
@@ -30,11 +30,6 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
     MailModule,
   ],
   controllers: [],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-  ],
+  providers: [],
 })
 export class AppModule {}

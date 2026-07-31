@@ -48,6 +48,7 @@ exports.__esModule = true;
 exports.DashboardController = void 0;
 var common_1 = require("@nestjs/common");
 var current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
+var jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard"); // Adicionado
 var DashboardController = /** @class */ (function () {
     function DashboardController(dashboardService) {
         this.dashboardService = dashboardService;
@@ -56,7 +57,12 @@ var DashboardController = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.dashboardService.getHomeSummary(user.profileId)];
+                    case 0:
+                        // Trava defensiva para evitar o crash (erro 500)
+                        if (!user || !user.profileId) {
+                            throw new common_1.UnauthorizedException('Sessão inválida ou usuário não encontrado.');
+                        }
+                        return [4 /*yield*/, this.dashboardService.getHomeSummary(user.profileId)];
                     case 1: return [2 /*return*/, _a.sent()];
                 }
             });
@@ -67,7 +73,8 @@ var DashboardController = /** @class */ (function () {
         __param(0, current_user_decorator_1.CurrentUser())
     ], DashboardController.prototype, "getSummary");
     DashboardController = __decorate([
-        common_1.Controller('dashboard')
+        common_1.Controller('dashboard'),
+        common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard) // <-- A proteção obrigatória
     ], DashboardController);
     return DashboardController;
 }());

@@ -1,9 +1,7 @@
-version: "3.8"
-
 services:
   postgres:
-    image: postgres:15-alpine
-    container_name: healthy-postgres
+    image: postgres:16-alpine
+    container_name: healthy-db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespassword
@@ -11,7 +9,27 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - healthy-db-data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d healthy_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    container_name: healthy-backend
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgrespassword@postgres:5432/healthy_db?schema=public"
+      JWT_SECRET: "sua_chave_secreta_e_segura_a_qui_123"
+      JWT_EXPIRES_IN: "900"
+      PORT: 3000
+      NODE_ENV: "production"
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
-  healthy-db-data:
+  postgres_data:

@@ -5,9 +5,12 @@ import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { AppConfigService } from './config/app-config.service';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+
+  const configService = app.get(AppConfigService, { strict: false });
 
   app.use(helmet());
 
@@ -30,9 +33,11 @@ async function bootstrap(): Promise<void> {
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new GlobalExceptionFilter());
 
-  await app.listen(3000, '0.0.0.0');
+  const port = configService.port || 3000;
+
+  await app.listen(port, '0.0.0.0');
   console.log(
-    `Healthy MVP Backend is running on: http://localhost:3000/api/v1`,
+    `Healthy MVP Backend is running on: http://localhost:${port}/api/v1`,
   );
 }
 bootstrap();

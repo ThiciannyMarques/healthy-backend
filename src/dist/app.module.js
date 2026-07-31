@@ -8,8 +8,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 exports.__esModule = true;
 exports.AppModule = void 0;
 var common_1 = require("@nestjs/common");
-var core_1 = require("@nestjs/core");
-var event_emitter_1 = require("@nestjs/event-emitter");
+var event_emitter_1 = require("@nestjs/event-emitter"); // <-- Importação adicionada
+var app_config_module_1 = require("./config/app-config.module");
 var database_module_1 = require("./database/database.module");
 var users_module_1 = require("./modules/users/users.module");
 var auth_module_1 = require("./modules/auth/auth.module");
@@ -21,15 +21,15 @@ var gamification_module_1 = require("./modules/gamification/gamification.module"
 var dashboard_module_1 = require("./modules/dashboard/dashboard.module");
 var profile_module_1 = require("./modules/profile/profile.module");
 var mail_module_1 = require("./modules/mail/mail.module");
-var jwt_auth_guard_1 = require("./modules/auth/guards/jwt-auth.guard");
 var AppModule = /** @class */ (function () {
     function AppModule() {
     }
     AppModule = __decorate([
         common_1.Module({
             imports: [
-                event_emitter_1.EventEmitterModule.forRoot(),
+                app_config_module_1.AppConfigModule,
                 database_module_1.DatabaseModule,
+                event_emitter_1.EventEmitterModule.forRoot(),
                 users_module_1.UsersModule,
                 auth_module_1.AuthModule,
                 medications_module_1.MedicationsModule,
@@ -42,12 +42,7 @@ var AppModule = /** @class */ (function () {
                 mail_module_1.MailModule,
             ],
             controllers: [],
-            providers: [
-                {
-                    provide: core_1.APP_GUARD,
-                    useClass: jwt_auth_guard_1.JwtAuthGuard
-                },
-            ]
+            providers: []
         })
     ], AppModule);
     return AppModule;

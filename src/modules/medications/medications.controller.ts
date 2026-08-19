@@ -1,11 +1,13 @@
-import { Controller, Post, Get, Body, Param, Patch } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Patch, UseGuards } from '@nestjs/common';
 import { MedicationsService } from './medications.service';
 import { CreateMedicationDto } from './dto/create-medication.dto';
 import { LogMedicationDto } from './dto/log-medication.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
 import { Medication, MedicationLog } from '@prisma/client';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('medications')
 export class MedicationsController {
   constructor(private readonly medicationsService: MedicationsService) {}
@@ -45,5 +47,12 @@ export class MedicationsController {
       medicationId,
       dto,
     );
+  }
+
+  @Get('logs')
+  async getLogs(
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<MedicationLog[]> {
+    return await this.medicationsService.findLogs(user.profileId);
   }
 }

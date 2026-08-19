@@ -15,14 +15,41 @@ export class ExerciseService {
     profileId: string,
     dto: LogExerciseDto,
   ): Promise<ExerciseLog> {
-    const log = await this.prisma.exerciseLog.create({
-      data: {
+    const targetDate = new Date(dto.loggedAt);
+
+    const startOfDay = new Date(targetDate);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(targetDate);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    const existingLog = await this.prisma.exerciseLog.findFirst({
+      where: {
         profileId,
-        didExercise: dto.didExercise,
-        durationMinutes: dto.durationMinutes,
-        loggedAt: new Date(dto.loggedAt),
+        loggedAt: { gte: startOfDay, lte: endOfDay },
       },
     });
+
+    let log: ExerciseLog;
+
+    if (existingLog) {
+      log = await this.prisma.exerciseLog.update({
+        where: { id: existingLog.id },
+        data: {
+          didExercise: dto.didExercise,
+          durationMinutes: dto.durationMinutes,
+        },
+      });
+    } else {
+      log = await this.prisma.exerciseLog.create({
+        data: {
+          profileId,
+          didExercise: dto.didExercise,
+          durationMinutes: dto.durationMinutes,
+          loggedAt: targetDate,
+        },
+      });
+    }
 
     if (dto.didExercise) {
       this.eventEmitter.emit('habit.logged', {

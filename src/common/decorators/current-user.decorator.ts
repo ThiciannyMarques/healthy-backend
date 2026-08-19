@@ -1,4 +1,4 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { AuthenticatedUser } from '../../modules/auth/strategies/jwt.strategy';
 
 export const CurrentUser = createParamDecorator(
@@ -6,6 +6,9 @@ export const CurrentUser = createParamDecorator(
     const request = ctx
       .switchToHttp()
       .getRequest<{ user: AuthenticatedUser }>();
+    if (!request || !request.user) {
+      throw new UnauthorizedException('Usuário não autenticado.');
+    }
     return request.user;
   },
 );

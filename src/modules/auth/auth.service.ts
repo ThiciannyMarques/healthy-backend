@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   InternalServerErrorException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
@@ -52,6 +53,26 @@ export class AuthService {
     }
 
     return this.generateAuthResponse(user);
+  }
+
+  async issueDevToken(email: string): Promise<AuthResponse> {
+    const allowDevToken = process.env.ALLOW_DEV_TOKEN === 'true' || process.env.NODE_ENV !== 'production';
+    if (!allowDevToken) {
+      throw new ForbiddenException('Dev token endpoint is disabled in production.');
+    }
+
+    let user = await this.usersService.findByEmail(email);
+    if (!user) {
+      const randomPassword = randomUUID() + randomUUID();
+      const passwordHash = await argon2.hash(randomPassword);
+      user = await this.usersService.create(email, passwordHash, 'Dev User');
+    }
+
+    if (!user.profile) {
+      throw new InternalServerErrorException('User has no profile.');
+    }
+
+    return this.generateAuthResponse(user as User & { profile: Profile });
   }
 
   async login(dto: LoginDto): Promise<AuthResponse> {

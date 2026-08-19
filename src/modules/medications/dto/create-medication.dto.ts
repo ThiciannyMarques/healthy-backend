@@ -5,7 +5,9 @@ import {
   Min,
   Matches,
   IsOptional,
+  IsBoolean,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CreateMedicationDto {
   @IsString()
@@ -16,15 +18,32 @@ export class CreateMedicationDto {
   @IsNotEmpty({ message: 'A dosagem é obrigatória (ex: 1 comprimido, 500mg).' })
   dosage: string;
 
+  @IsOptional()
+  @Transform(({ value }) => (value !== undefined ? Number(value) : undefined))
   @IsInt()
   @Min(0, { message: 'O stock não pode ser negativo.' })
-  stockCount: number;
+  stockCount?: number;
 
+  @IsOptional()
+  @Transform(({ value }) => (value !== undefined ? Number(value) : undefined))
+  @IsInt()
+  @Min(1, { message: 'O lowStockThreshold deve ser no mínimo 1.' })
+  lowStockThreshold?: number;
+
+  @IsOptional()
   @IsString()
   @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, {
     message: 'O horário deve estar no formato HH:MM (ex: 08:00, 22:30).',
   })
-  timeOfDay: string;
+  timeOfDay?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  active?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
 
   @IsString()
   @IsOptional()

@@ -25,7 +25,7 @@ export class DashboardService {
 
     return {
       hydration: { current: hydration._sum.amountMl || 0 },
-      exercise: { done: !!exercise?.didExercise },
+      exercise: { done: exercise?.didExercise ?? null },
       profile,
     };
   }

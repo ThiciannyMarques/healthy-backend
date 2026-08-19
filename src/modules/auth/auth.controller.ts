@@ -25,6 +25,13 @@ export class AuthController {
   }
 
   @Public()
+  @Post('dev-token')
+  @HttpCode(HttpStatus.OK)
+  async devToken(@Body('email') email: string) {
+    return this.authService.issueDevToken(email);
+  }
+
+  @Public()
   @Post('social-login')
   @HttpCode(HttpStatus.OK)
   async socialLogin(@Body() dto: SocialLoginDto) {

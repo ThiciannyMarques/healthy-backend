@@ -1,4 +1,3 @@
-// src/modules/weight/weight.service.ts
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { LogWeightDto } from './dto/log-weight.dto';

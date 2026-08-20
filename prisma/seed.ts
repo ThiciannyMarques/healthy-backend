@@ -3,20 +3,16 @@ import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 
-// 1. Lemos a variável de ambiente garantindo que ela existe
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
   throw new Error('DATABASE_URL não está definida nas variáveis de ambiente.');
 }
 
-// 2. Criamos o pool de conexão nativo do PostgreSQL
 const pool = new Pool({ connectionString });
 
-// 3. Passamos o pool para o adapter do Prisma
 const adapter = new PrismaPg(pool);
 
-// 4. Instanciamos o PrismaClient fornecendo o adapter (isso preenche o PrismaClientOptions)
 const prisma = new PrismaClient({ adapter });
 
 async function main() {

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { EventEmitterModule } from '@nestjs/event-emitter'; // <-- Importação adicionada
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppConfigModule } from './config/app-config.module';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './modules/users/users.module';
@@ -17,7 +17,7 @@ import { MailModule } from './modules/mail/mail.module';
   imports: [
     AppConfigModule,
     DatabaseModule,
-    EventEmitterModule.forRoot(), // <-- Módulo global de eventos inicializado aqui
+    EventEmitterModule.forRoot(),
     UsersModule,
     AuthModule,
     MedicationsModule,

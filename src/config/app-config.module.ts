@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { validate } from './env.validation';
 import { AppConfigService } from './app-config.service';
 
-@Global() // Permite que a configuração seja acessada em qualquer módulo
+@Global()
 @Module({
   imports: [
     ConfigModule.forRoot({

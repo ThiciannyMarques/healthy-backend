@@ -34,7 +34,7 @@ export class MedicationsService {
         color: dto.color || '#E24A5C',
         icon: dto.icon || 'pill',
         frequency: dto.frequency || 'DAILY',
-        isActive: activeStatus, // Força true para novos cadastros
+        isActive: activeStatus,
       },
     });
   }
@@ -43,7 +43,7 @@ export class MedicationsService {
     return await this.prisma.medication.findMany({
       where: {
         profileId,
-        isActive: true, // Traz apenas os medicamentos ativos (não finalizados)
+        isActive: true,
         deletedAt: null,
       },
       orderBy: { timeOfDay: 'asc' },
@@ -64,7 +64,7 @@ export class MedicationsService {
 
     return await this.prisma.medication.update({
       where: { id: medicationId },
-      data: { isActive: false }, // Aqui torna-se finalizado/inativo
+      data: { isActive: false },
     });
   }
 
@@ -115,10 +115,36 @@ export class MedicationsService {
     return log;
   }
 
-  async findLogs(profileId: string): Promise<MedicationLog[]> {
+  async findLogs(
+    profileId: string,
+    startDate?: string,
+    endDate?: string,
+  ): Promise<MedicationLog[]> {
+    const where: any = { profileId };
+
+    if (startDate) {
+      where.loggedAt = { gte: new Date(startDate) };
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      where.loggedAt = { ...where.loggedAt, lte: end };
+    }
+
     return await this.prisma.medicationLog.findMany({
-      where: { profileId },
+      where,
       orderBy: { loggedAt: 'desc' },
+      take: startDate || endDate ? undefined : 30,
+      include: {
+        medication: {
+          select: {
+            name: true,
+            dosage: true,
+            color: true,
+            icon: true,
+          },
+        },
+      },
     });
   }
 }

@@ -1,3 +1,4 @@
+// src/modules/weight/weight.service.ts
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { LogWeightDto } from './dto/log-weight.dto';
@@ -28,11 +29,26 @@ export class WeightService {
     return log;
   }
 
-  async getHistory(profileId: string): Promise<WeightLog[]> {
+  async getHistory(
+    profileId: string,
+    startDate?: string,
+    endDate?: string,
+  ): Promise<WeightLog[]> {
+    const where: any = { profileId };
+
+    if (startDate) {
+      where.loggedAt = { gte: new Date(startDate) };
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      where.loggedAt = { ...where.loggedAt, lte: end };
+    }
+
     return await this.prisma.weightLog.findMany({
-      where: { profileId },
+      where,
       orderBy: { loggedAt: 'desc' },
-      take: 30,
+      take: startDate || endDate ? undefined : 30,
     });
   }
 }

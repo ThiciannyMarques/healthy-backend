@@ -1,4 +1,13 @@
-import { Controller, Post, Get, Body, Param, Patch, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  Patch,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
 import { MedicationsService } from './medications.service';
 import { CreateMedicationDto } from './dto/create-medication.dto';
 import { LogMedicationDto } from './dto/log-medication.dto';
@@ -6,6 +15,17 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
 import { Medication, MedicationLog } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { IsOptional, IsDateString } from 'class-validator';
+
+class MedicationLogsQuery {
+  @IsOptional()
+  @IsDateString()
+  startDate?: string;
+
+  @IsOptional()
+  @IsDateString()
+  endDate?: string;
+}
 
 @UseGuards(JwtAuthGuard)
 @Controller('medications')
@@ -52,7 +72,12 @@ export class MedicationsController {
   @Get('logs')
   async getLogs(
     @CurrentUser() user: AuthenticatedUser,
+    @Query() query: MedicationLogsQuery,
   ): Promise<MedicationLog[]> {
-    return await this.medicationsService.findLogs(user.profileId);
+    return await this.medicationsService.findLogs(
+      user.profileId,
+      query.startDate,
+      query.endDate,
+    );
   }
 }

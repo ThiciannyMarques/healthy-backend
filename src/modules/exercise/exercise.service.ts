@@ -79,4 +79,27 @@ export class ExerciseService {
       orderBy: { loggedAt: 'desc' },
     });
   }
+
+  async getHistory(
+    profileId: string,
+    startDate?: string,
+    endDate?: string,
+  ): Promise<ExerciseLog[]> {
+    const where: any = { profileId };
+
+    if (startDate) {
+      where.loggedAt = { gte: new Date(startDate) };
+    }
+    if (endDate) {
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      where.loggedAt = { ...where.loggedAt, lte: end };
+    }
+
+    return await this.prisma.exerciseLog.findMany({
+      where,
+      orderBy: { loggedAt: 'desc' },
+      take: startDate || endDate ? undefined : 30,
+    });
+  }
 }

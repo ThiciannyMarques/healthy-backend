@@ -1,10 +1,21 @@
-import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, UseGuards } from '@nestjs/common';
 import { WeightService } from './weight.service';
 import { LogWeightDto } from './dto/log-weight.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
 import { WeightLog } from '@prisma/client';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { IsOptional, IsDateString } from 'class-validator';
+
+class WeightHistoryQuery {
+  @IsOptional()
+  @IsDateString()
+  startDate?: string;
+
+  @IsOptional()
+  @IsDateString()
+  endDate?: string;
+}
 
 @UseGuards(JwtAuthGuard)
 @Controller('weight')
@@ -22,7 +33,12 @@ export class WeightController {
   @Get('history')
   async getHistory(
     @CurrentUser() user: AuthenticatedUser,
+    @Query() query: WeightHistoryQuery,
   ): Promise<WeightLog[]> {
-    return await this.weightService.getHistory(user.profileId);
+    return await this.weightService.getHistory(
+      user.profileId,
+      query.startDate,
+      query.endDate,
+    );
   }
 }
